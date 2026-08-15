@@ -80,7 +80,7 @@ export const parts: BookPart[] = partSeeds.map((seed) => {
     title: seed.title,
     description: seed.description,
     pageCount: pages.length,
-    coverImage: pages[0].imageUrl,
+    coverImage: pages[0]!.imageUrl,
     pages,
   };
 });
@@ -96,4 +96,4 @@ export function getNextPart(partId: string): BookPart | undefined {
   return index >= 0 ? parts[index + 1] : undefined;
 }
 
-export const firstPartId = parts[0].id;
+export const firstPartId = parts[0]!.id;
