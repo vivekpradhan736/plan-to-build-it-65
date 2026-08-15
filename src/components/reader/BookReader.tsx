@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import { PageImage } from "./PageImage";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { BookPart } from "@/data/mahabharat";
@@ -26,6 +27,7 @@ export function BookReader({
   const isMobile = useIsMobile();
   const step = isMobile ? 1 : 2;
   const [flip, setFlip] = useState<Flip>(null);
+  const [flipActive, setFlipActive] = useState(false);
   const dragStart = useRef<number | null>(null);
   const pages = part.pages;
 
@@ -40,12 +42,14 @@ export function BookReader({
       const commit = () => {
         onIndexChange(dir === "next" ? index + step : index - step);
         setFlip(null);
+        setFlipActive(false);
       };
       if (prefersReducedMotion()) {
         commit();
         return;
       }
       setFlip({ dir });
+      window.requestAnimationFrame(() => window.requestAnimationFrame(() => setFlipActive(true)));
       window.setTimeout(commit, FLIP_MS);
     },
     [flip, canNext, canPrev, index, step, onIndexChange],
@@ -60,10 +64,10 @@ export function BookReader({
     return () => window.removeEventListener("keydown", onKey);
   }, [go]);
 
-  const onPointerDown = (e: React.PointerEvent) => {
+  const onPointerDown = (e: ReactPointerEvent) => {
     dragStart.current = e.clientX;
   };
-  const onPointerUp = (e: React.PointerEvent) => {
+  const onPointerUp = (e: ReactPointerEvent) => {
     if (dragStart.current === null) return;
     const dx = e.clientX - dragStart.current;
     dragStart.current = null;
@@ -133,8 +137,9 @@ export function BookReader({
               )}
               style={{
                 transformOrigin: flip.dir === "next" ? "left center" : "right center",
-                transform:
-                  flip.dir === "next"
+                transform: !flipActive
+                  ? "rotateY(0deg)"
+                  : flip.dir === "next"
                     ? "rotateY(-176deg)"
                     : "rotateY(176deg)",
                 boxShadow: "var(--shadow-page)",
