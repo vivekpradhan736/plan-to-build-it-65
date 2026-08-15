@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ContentsRouteImport } from './routes/contents'
+import { Route as ReadPartIdRouteImport } from './routes/read.$partId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const ContentsRoute = ContentsRouteImport.update({
   path: '/contents',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReadPartIdRoute = ReadPartIdRouteImport.update({
+  id: '/read/$partId',
+  path: '/read/$partId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contents': typeof ContentsRoute
+  '/read/$partId': typeof ReadPartIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contents': typeof ContentsRoute
+  '/read/$partId': typeof ReadPartIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contents': typeof ContentsRoute
+  '/read/$partId': typeof ReadPartIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/contents'
+  fullPaths: '/' | '/about' | '/contents' | '/read/$partId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/contents'
-  id: '__root__' | '/' | '/about' | '/contents'
+  to: '/' | '/about' | '/contents' | '/read/$partId'
+  id: '__root__' | '/' | '/about' | '/contents' | '/read/$partId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ContentsRoute: typeof ContentsRoute
+  ReadPartIdRoute: typeof ReadPartIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/read/$partId': {
+      id: '/read/$partId'
+      path: '/read/$partId'
+      fullPath: '/read/$partId'
+      preLoaderRoute: typeof ReadPartIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ContentsRoute: ContentsRoute,
+  ReadPartIdRoute: ReadPartIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
